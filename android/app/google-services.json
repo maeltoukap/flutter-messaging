@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "67403236222",
+    "project_id": "wordpress-app-5b772",
+    "storage_bucket": "wordpress-app-5b772.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67403236222:android:6de728ac5a502aa3b0292f",
+        "android_client_info": {
+          "package_name": "com.example.wordpress_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67403236222-v9rhqesffu2vb6nvc1l8ij4956ppfmhm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJ45swiI3fxDpNzOIo9gGPnYf-KXXcxMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67403236222-v9rhqesffu2vb6nvc1l8ij4956ppfmhm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67403236222:android:2615ebf56838f4c6b0292f",
+        "android_client_info": {
+          "package_name": "com.mrblab.newsfreak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "67403236222-v9rhqesffu2vb6nvc1l8ij4956ppfmhm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJ45swiI3fxDpNzOIo9gGPnYf-KXXcxMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "67403236222-v9rhqesffu2vb6nvc1l8ij4956ppfmhm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
