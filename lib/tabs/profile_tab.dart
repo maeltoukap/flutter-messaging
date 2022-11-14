@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wordpress_app/bloc/notifications/notifications_bloc.dart';
 import 'package:wordpress_app/bloc/setting/settings_bloc.dart';
 import 'package:wordpress_app/bloc/theme/theme_bloc.dart';
@@ -8,6 +9,7 @@ import 'package:wordpress_app/bloc/user/user_bloc.dart';
 import 'package:wordpress_app/configs/configs.dart';
 import 'package:wordpress_app/pages/welcome.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:wordpress_app/utils/navigation.dart';
 
 class SettingPage extends StatefulWidget {
   SettingPage({Key? key}) : super(key: key);
@@ -19,7 +21,8 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage>
     with AutomaticKeepAliveClientMixin {
   void openLicenceDialog() {
-    final SettingsBloc sb = BlocProvider.of<SettingsBloc>(context, listen: false);
+    final SettingsBloc sb =
+        BlocProvider.of<SettingsBloc>(context, listen: false);
     showDialog(
         context: context,
         builder: (_) {
@@ -39,6 +42,8 @@ class _SettingPageState extends State<SettingPage>
   Widget build(BuildContext context) {
     super.build(context);
     final ub = context.watch<UserBloc>();
+    context.watch<NotificationsBloc>().checkSubscription();
+    context.watch<ThemeBloc>().loadFromPrefs();
     return Scaffold(
         body: CustomScrollView(
       slivers: [
@@ -49,8 +54,11 @@ class _SettingPageState extends State<SettingPage>
           backgroundColor: Theme.of(context).primaryColor,
           flexibleSpace: FlexibleSpaceBar(
             centerTitle: false,
-            title: const Text('settings', style: const TextStyle(color: Colors.white)).tr(),
-            titlePadding: const EdgeInsets.only(left: 20, bottom: 20, right: 20),
+            title: const Text('settings',
+                    style: const TextStyle(color: Colors.white))
+                .tr(),
+            titlePadding:
+                const EdgeInsets.only(left: 20, bottom: 20, right: 20),
           ),
         ),
         SliverToBoxAdapter(
@@ -105,7 +113,8 @@ class _SettingPageState extends State<SettingPage>
                         ).tr(),
                         trailing: Switch(
                             activeColor: Theme.of(context).primaryColor,
-                            value: context.watch<NotificationsBloc>().subscribed!,
+                            value:
+                                context.watch<NotificationsBloc>().subscribed!,
                             onChanged: (bool value) => context
                                 .read<NotificationsBloc>()
                                 .configureFcmSubscription(value)),
@@ -358,7 +367,6 @@ class _SettingPageState extends State<SettingPage>
                         // onTap: () => AppService()
                         //     .openLink(context, Config.youtubeChannelUrl), //TODO: change this
                       ),
-
                       const _Divider(),
                       ListTile(
                         contentPadding: const EdgeInsets.all(0),
@@ -385,7 +393,7 @@ class _SettingPageState extends State<SettingPage>
                     ],
                   ),
                 ),
-                
+
                 //BuyNowWidget(),
               ],
             ),
@@ -398,8 +406,6 @@ class _SettingPageState extends State<SettingPage>
   @override
   bool get wantKeepAlive => true;
 }
-
-
 
 class _Divider extends StatelessWidget {
   const _Divider({
@@ -455,7 +461,8 @@ class GuestUserUI extends StatelessWidget {
 class UserUI extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final UserBloc ub = context.watch<UserBloc>();
+    context.read<UserBloc>().getUserData();
+    final UserBloc ub = context.read<UserBloc>();
     return Column(
       children: [
         ListTile(
@@ -539,7 +546,7 @@ class UserUI extends StatelessWidget {
               TextButton(
                   onPressed: () async {
                     Navigator.pop(context);
-                    // _handleLogout(context); //TODO: change this
+                    _handleLogout(context); //TODO: change this
                   },
                   child: const Text('logout').tr()),
             ],
@@ -547,10 +554,19 @@ class UserUI extends StatelessWidget {
         });
   }
 
-  // Future _handleLogout(context) async {
-  //   final UserBloc ub = BlocProvider.of<UserBloc>(context, listen: false);
-  //   await ub
-  //       .userSignout()
-  //       .then((value) => nextScreenCloseOthers(context, WelcomePage())); //TODO: change this
-  // }
+  Future _handleLogout(context) async {
+    final UserBloc ub = BlocProvider.of<UserBloc>(context, listen: false);
+    await ub
+        .userSignout()
+        .then((value) => nextScreenCloseOthers(context, WelcomePage()));
+  }
+}
+
+String _userName = "";
+String _email = "";
+Future getUserData() async {
+  final SharedPreferences sp = await SharedPreferences.getInstance();
+  _userName = sp.getString('user_name')!;
+  _email = sp.getString('email')!;
+  // notifyListeners();
 }

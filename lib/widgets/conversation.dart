@@ -48,10 +48,17 @@ class _ConversationState extends State<Conversation> {
         //     .add(discussion.toMap());
         // MessagesService()
         //     .checkDiscussion(widget.conversationModel.chatUsers.user.uid!);
+        // FirebaseFirestore.instance
+        //     .collection("Users")
+        //     .doc(FirebaseAuth.instance.currentUser!.uid)
+        //     .collection("Conversations")
+        //     .add({'creator': FirebaseAuth.instance.currentUser!.uid}).then(
+        //         (value) => print(value));
+
+        // Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //   return ChatDetails(conversationMessages: widget.conversationModel);
+        // }));
         print(widget.conversationModel.chatUsers.user.id);
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return ChatDetails(conversationMessages: widget.conversationModel);
-        }));
       },
       child: Container(
         padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),

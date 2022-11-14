@@ -10,13 +10,15 @@ import 'package:wordpress_app/configs/configs.dart';
 import 'package:wordpress_app/models/chat_message.dart';
 import 'package:wordpress_app/models/chat_user.dart';
 import 'package:wordpress_app/models/conversation_model.dart';
+import 'package:wordpress_app/models/discussion_model.dart';
 import 'package:wordpress_app/models/user_model.dart';
 import 'package:wordpress_app/pages/welcome.dart';
 import 'package:wordpress_app/pages/user_list.dart';
+import 'package:wordpress_app/utils/conversation_loading.dart';
 import 'package:wordpress_app/utils/empty_image.dart';
 import 'package:wordpress_app/utils/loading_card.dart';
 import 'package:wordpress_app/utils/navigation.dart';
-import 'package:wordpress_app/widgets/conversation.dart';
+import 'package:wordpress_app/widgets/conversation-copy.dart';
 
 class Conversations extends StatefulWidget {
   const Conversations({Key? key}) : super(key: key);
@@ -118,7 +120,7 @@ class _ConversationsState extends State<Conversations> {
                     ),
                     InkWell(
                       onTap: () {
-                        // nextScreen(context, UserList());
+                        nextScreen(context, UserList());
                       },
                       child: Container(
                         padding: const EdgeInsets.only(
@@ -182,13 +184,14 @@ class _ConversationsState extends State<Conversations> {
                 future: FirebaseFirestore.instance
                     .collection("Users")
                     .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection("Discussions")
+                    .collection("Conversations")
                     // .where("uid",
                     //     isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
                     // .doc("Fuggoi5F2jefEb9s6gjg")
                     // .collection("Conversations")
                     .get(),
                 builder: (context, snapshot) {
+                  // print(snapshot.data!.size);
                   if (snapshot.hasError) {
                     return const Text("Something went wrong");
                   }
@@ -206,8 +209,12 @@ class _ConversationsState extends State<Conversations> {
                     );
                   }
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return LoadingCard(
-                        height: MediaQuery.of(context).size.height);
+                    return ListView.builder(
+                        itemCount: 10,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return ConversationLoadingCard();
+                        });
                   }
                   return ListView(
                       shrinkWrap: true,
@@ -218,18 +225,32 @@ class _ConversationsState extends State<Conversations> {
                             document.data()! as Map<String, dynamic>;
                         print(data["uid"]);
                         return Conversation(
-                          conversationModel: ConversationModel(
-                              chatUsers: ChatUsers(
-                                  // uid: data["uid"],
-                                  // name: data['userName'],
-                                  user: UserModel(
-                                      uid: data["uid"],
-                                      userEmail: data["email"],
-                                      userName: data["userName"]),
-                                  imageURL: "chatUsers[index]",
-                                  messageText: messages.last.messageContent,
-                                  time: "now"),
-                              messages: messages),
+                          discussions: DiscussionModel(
+                              uid: data["uid"],
+                              creationDateTime: data["creationDateTime"],
+                              lastestMessage: data["lastestMessage"],
+                              latestProvider: data["latestProvider"],
+                              isLastMessageHasBeenRead:
+                                  data["isLastMessageHasBeenRead"],
+                              user1: data["user1"],
+                              user2: data["user2"],
+                              senderEmail: data["senderEmail"],
+                              receiverEmail: data["receiverEmail"],
+                              senderUsername: data["senderUsername"],
+                              receiverUsername: data["receiverUsername"]),
+                          pageProvider: "Conversations",
+                          // ConversationModel(
+                          //     chatUsers: ChatUsers(
+                          //         // uid: data["uid"],
+                          //         // name: data['userName'],
+                          //         user: UserModel(
+                          //             uid: data["uid"],
+                          //             userEmail: data["email"],
+                          //             userName: data["userName"]),
+                          //         imageURL: "chatUsers[index]",
+                          //         messageText: messages.last.messageContent,
+                          //         time: "now"),
+                          //     messages: messages),
                           isMessageRead: false,
                         );
                       }).toList());

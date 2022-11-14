@@ -94,7 +94,7 @@ class FileService {
         .ref(message.senderUid + "/" + message.receiverUid + "/" + fileName)
         .getDownloadURL();
     message.fileUrl = url;
-    // MessagesService().sendMessages(discussion, message);
+    MessagesService().sendMessages(discussion, message);
     return url;
   }
 }

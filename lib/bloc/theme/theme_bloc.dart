@@ -34,7 +34,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
     _pref ??= await SharedPreferences.getInstance();
   }
 
-  _loadFromPrefs() async {
+  loadFromPrefs() async {
       await _initPrefs();
       _darkTheme = _pref!.getBool(key) ?? false;
       // notifyListeners();

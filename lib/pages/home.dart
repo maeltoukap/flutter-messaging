@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
+import 'package:wordpress_app/bloc/notifications/notifications_bloc.dart';
+import 'package:wordpress_app/bloc/setting/settings_bloc.dart';
+import 'package:wordpress_app/bloc/theme/theme_bloc.dart';
 import 'package:wordpress_app/bloc/user/user_bloc.dart';
 import 'package:wordpress_app/services/notification_service.dart';
 import 'package:wordpress_app/tabs/chat.dart';
@@ -25,9 +28,9 @@ class _HomePageState extends State<HomePage> {
 
   final List<IconData> iconList = [
     Feather.home,
-    Feather.youtube,
-    Feather.search,
-    Feather.heart,
+    // Feather.youtube,
+    // Feather.search,
+    // Feather.heart,
     Feather.user
   ];
 
@@ -35,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _pageController = PageController();
+
     // AppService().checkInternet().then((hasInternet) {
     //   if (hasInternet!) {
     //     context.read<CategoryBloc>().fetchData();
@@ -44,23 +48,23 @@ class _HomePageState extends State<HomePage> {
     //   }
     // });
 
-    // Future.delayed(Duration(milliseconds: 0)).then((_) {
-    //   NotificationService()
-    //       .initFirebasePushNotification(context)
-    //       .then((_) => context.read<NotificationBloc>().checkSubscription())
-    //       .then((_) {
-    //     context.read<SettingsBloc>().getPackageInfo();
-    //     if (!context.read<UserBloc>().guestUser) {
-    //       context.read<UserBloc>().getUserData();
-    //     }
-    //   });
-    // }).then((_) {
-    //   // if (AdConfig.isAdsEnabled) {
-    //   //   AdConfig()
-    //   //       .initAdmob()
-    //   //       .then((value) => context.read<AdsBloc>().initiateAds());
-    //   // }
-    // });
+    Future.delayed(Duration(milliseconds: 0)).then((_) {
+      NotificationService()
+          .initFirebasePushNotification(context)
+          .then((_) => context.read<NotificationsBloc>().checkSubscription())
+          .then((_) {
+        // context.read<SettingsBloc>().getPackageInfo();
+        if (!context.read<UserBloc>().guestUser) {
+          context.read<UserBloc>().getUserData();
+        }
+      });
+    }).then((_) {
+      // if (AdConfig.isAdsEnabled) {
+      //   AdConfig()
+      //       .initAdmob()
+      //       .then((value) => context.read<AdsBloc>().initiateAds());
+      // }
+    });
   }
 
   @override
@@ -90,6 +94,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<NotificationsBloc>().checkSubscription();
+    context.watch<ThemeBloc>().loadFromPrefs();
+    context.read<UserBloc>().getUserData();
     return WillPopScope(
       onWillPop: () async => await _onWillPop(),
       child: Scaffold(
@@ -99,7 +106,7 @@ class _HomePageState extends State<HomePage> {
           physics: NeverScrollableScrollPhysics(),
           allowImplicitScrolling: false,
           controller: _pageController,
-          children: const <Widget>[
+          children: <Widget>[
             // HomeTab(),
             // VideoTab(),
             // Chat(),
@@ -108,10 +115,11 @@ class _HomePageState extends State<HomePage> {
             // SearchTab(),
             // BookmarkTab(),
             // UserList(),
-            Conversations(),
-            UserList(),
-            UserList(),
-            UserList(),
+            const Conversations(),
+            // UserList(),
+            SettingPage(),
+            // UserList(),
+            // UserList(),
             // SettingPage(),
             // SettingPage(),
             // SettingPage()

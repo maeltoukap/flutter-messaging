@@ -98,7 +98,7 @@ class _InputWidgetState extends State<InputWidget> {
       width: double.infinity,
       height: 50.0,
       decoration: const BoxDecoration(
-          border:  Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+          border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
           color: Colors.white),
       child: Row(
         children: <Widget>[
@@ -122,7 +122,7 @@ class _InputWidgetState extends State<InputWidget> {
           // Send Message Button
           Material(
             child: Container(
-              margin:  EdgeInsets.symmetric(horizontal: 8.0),
+              margin: EdgeInsets.symmetric(horizontal: 8.0),
               child: IconButton(
                 icon: Icon(Icons.send),
                 onPressed: () async {

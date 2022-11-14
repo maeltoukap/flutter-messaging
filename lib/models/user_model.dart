@@ -26,4 +26,17 @@ class UserModel {
     }
     return users;
   }
+  static UserModel fromDocumentSnapshot(DocumentSnapshot querySnapshot) {
+    // UserModel users;
+    // for (final doc in querySnapshot.docs) {
+      // print(querySnapshot['sendDateTime']);
+      final user = UserModel(
+        userName: querySnapshot['userName'],
+        userEmail: querySnapshot['email'],
+        uid: querySnapshot['uid'],
+      );
+      // users.add(user);
+    // }
+    return user;
+  }
 }

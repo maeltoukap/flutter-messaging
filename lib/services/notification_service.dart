@@ -1,11 +1,17 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wordpress_app/bloc/user/user_bloc.dart';
+import 'package:wordpress_app/hive/hive_message.dart';
 import 'package:wordpress_app/models/constants_model.dart';
 import 'package:wordpress_app/models/notification_model.dart';
+import 'package:wordpress_app/models/user_model.dart';
+import 'package:wordpress_app/pages/chat_detail.dart';
 import 'package:wordpress_app/utils/notification_dialog.dart';
 
 class NotificationService {
@@ -49,10 +55,33 @@ class NotificationService {
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       print('onMessage: ${message.notification!.body}');
-      await saveNotificationData(message)
-          .then((value) => _handleOpenNotificationDialog(context, message));
-    });
+      // message.notification!.title = FirebaseAuth.instance.currentUser!.uid;
+      print("title " + message.notification!.title.toString());
 
+      final SharedPreferences sp = await SharedPreferences.getInstance();
+      // print(mes.notification);
+      if (message.notification!.title !=
+          FirebaseAuth.instance.currentUser!.uid) {
+        LocalMessageModel localMessageModel = LocalMessageModel(
+            hasBeenRead: false,
+            message: message.notification!.body,
+            receiverUid: FirebaseAuth.instance.currentUser!.uid,
+            senderUid:
+                "XGKeTHTgyxZ9NVYytC50UTzW3Xl2", //TODO: Change to true UID. Send the correct UID in the request body and read it
+            containFiles: false,
+            fileUrl: "",
+            sendDateTime:
+                DateFormat.Hm('en_US').format(DateTime.now()).toString(),
+            haveBeenSend: true,
+            provider: "external",
+            groupDateTime:
+                DateFormat.yMMMMd('en_US').format(DateTime.now()).toString());
+        addMessagesToHive(localMessageModel);
+        _handleOpenNotificationDialog(context, message);
+      }
+      // await saveNotificationData(message)
+      //     .then((value) => _handleOpenNotificationDialog(context, message));
+    });
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       print('b');
       await saveNotificationData(message)
@@ -60,8 +89,28 @@ class NotificationService {
     });
   }
 
+  getSenderData(String uid) async {}
+
   Future _handleOpenNotificationDialog(context, RemoteMessage message) async {
     DateTime now = DateTime.now();
+
+    UserModel user;
+    String username = "";
+    await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(message.notification!.title)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        print('Document data: ${documentSnapshot.data()}');
+        user = UserModel.fromDocumentSnapshot(documentSnapshot);
+        username = user.userName!;
+        print(user.userName);
+        return user;
+      } else {
+        print('Document does not exist on the database');
+      }
+    });
     String _timestamp = DateFormat('yyyyMMddHHmmss').format(now);
     NotificationModel notificationModel = NotificationModel(
         timestamp: _timestamp,
@@ -71,7 +120,8 @@ class NotificationService {
         postID: message.data['post_id'] == null
             ? null
             : int.parse(message.data['post_id']),
-        thumbnailUrl: message.data['image']);
+        thumbnailUrl: message.data['image'],
+        sender: username);
     openNotificationDialog(context, notificationModel);
   }
 

@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wordpress_app/bloc/notifications/notifications_bloc.dart';
+import 'package:wordpress_app/bloc/theme/theme_bloc.dart';
 import 'package:wordpress_app/bloc/user/user_bloc.dart';
 import 'package:wordpress_app/models/theme.dart';
 import 'package:wordpress_app/pages/splash.dart';
@@ -16,6 +18,12 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider<UserBloc>(
             create: (BuildContext context) => UserBloc(),
+          ),
+          BlocProvider<NotificationsBloc>(
+            create: (BuildContext context) => NotificationsBloc(),
+          ),
+          BlocProvider<ThemeBloc>(
+            create: (BuildContext context) => ThemeBloc(),
           ),
         ],
         // child: SplashPage(),

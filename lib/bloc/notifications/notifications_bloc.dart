@@ -7,8 +7,6 @@ part 'notifications_event.dart';
 part 'notifications_state.dart';
 
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
-
-
   bool? _subscribed;
   bool? get subscribed => _subscribed;
 
@@ -16,18 +14,20 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     final sp = await SharedPreferences.getInstance();
     await sp.setBool('subscribed', isSubscribed);
     _subscribed = isSubscribed;
+
     NotificationService().handleFcmSubscribtion();
     // notifyListeners();
   }
 
   Future checkSubscription() async {
-    await NotificationService().handleFcmSubscribtion().then((bool subscription) {
+    await NotificationService()
+        .handleFcmSubscribtion()
+        .then((bool subscription) {
       _subscribed = subscription;
       // notifyListeners();
-
     });
   }
-  
+
   NotificationsBloc() : super(NotificationsInitial()) {
     on<NotificationsEvent>((event, emit) {
       // TODO: implement event handler
